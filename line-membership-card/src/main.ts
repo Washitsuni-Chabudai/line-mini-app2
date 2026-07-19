@@ -1,11 +1,11 @@
 import liff from '@line/liff';
 
-// 金庫（.env）から安全にIDを読み出す記述に変更
+// 金庫（.env）から安全にIDを読み出す記述
 const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
 
 async function startApp() {
   try {
-    // 1. LINEのインカム（LIFF）を起動する
+    // 1. LINEのインカム（LIFF）を起動する（必ず「init」にします）
     await liff.init({ liffId: LIFF_ID });
 
     // 2. すでにLINE内でログインされているか確認
