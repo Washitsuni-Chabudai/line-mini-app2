@@ -1,92 +1,45 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
-body { background-color: #f0f2f5; transition: background 0.3s; padding-bottom: 20px; }
+body { background-color: #f0f2f5; padding: 16px; padding-bottom: 20px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
 
-/* 🎨 5つのテーマ定義 */
-.theme-sign {
-  --card-bg: linear-gradient(135deg, #00703C 0%, #004d29 100%);
-  --text-main: #ffffff;
-  --text-sub: #e0e0e0;
-  --accent: #F37021;
-  --border-radius: 12px;
-}
-.theme-card {
-  --card-bg: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-  --text-main: #333333;
-  --text-sub: #555555;
-  --accent: #4a90e2;
-  --border-radius: 16px;
-}
-.theme-wallet {
-  --card-bg: #ffffff;
-  --text-main: #111111;
-  --text-sub: #888888;
-  --accent: #000000;
-  --border-radius: 20px;
-}
-.theme-night {
-  --card-bg: #1a1a1a;
-  --text-main: #00ff00;
-  --text-sub: #aaaaaa;
-  --accent: #00cc00;
-  --border-radius: 8px;
-}
-.theme-night-body { background-color: #000; }
+#app { width: 100%; max-width: 480px; }
 
-.theme-cockpit {
-  --card-bg: #2c3e50;
-  --text-main: #f1c40f;
-  --text-sub: #bdc3c7;
-  --accent: #e74c3c;
-  --border-radius: 4px;
-}
-
-#app { max-width: 480px; margin: 0 auto; padding: 16px; }
-
-.theme-switcher { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; }
-.theme-switcher button {
-  white-space: nowrap; padding: 6px 12px; border-radius: 20px;
-  border: 1px solid #ccc; background: #fff; font-size: 12px; cursor: pointer;
-}
-.theme-switcher button.active { background: #333; color: #fff; border-color: #333; }
-
+/* 💳 会員証本体（阪神高速の標識風グリーンを固定採用） */
 .membership-card {
-  background: var(--card-bg); color: var(--text-main);
-  border-radius: var(--border-radius);
+  background: linear-gradient(135deg, #00703C 0%, #004d29 100%);
+  color: #ffffff;
+  border-radius: 12px;
   padding: 24px 20px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-  transition: all 0.4s ease;
 }
 
-.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px;}
-.brand-title { font-weight: bold; font-size: 16px; letter-spacing: 1px;}
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; }
+.brand-title { font-weight: bold; font-size: 16px; letter-spacing: 1px; }
 .security-clock { font-family: monospace; font-size: 14px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; }
 
 .profile-area { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
-.profile-img { width: 60px; height: 60px; min-width: 60px; border-radius: 50%; border: 3px solid var(--text-main); object-fit: cover; flex-shrink: 0; }
-.greeting { font-size: 12px; color: var(--text-sub); margin-bottom: 4px; }
+.profile-img { width: 60px; height: 60px; min-width: 60px; border-radius: 50%; border: 3px solid #ffffff; object-fit: cover; flex-shrink: 0; }
+.greeting { font-size: 12px; color: #e0e0e0; margin-bottom: 4px; }
 .profile-info h2 { font-size: 20px; margin: 0; word-break: break-all; }
 
-.barcode-area {
-  background: #ffffff; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 24px;
-}
+.barcode-area { background: #ffffff; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 24px; }
 .barcode-hint { font-size: 11px; color: #666; margin-bottom: 8px; }
 .barcode-img { width: 100%; max-width: 250px; height: auto; }
 
 .info-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
 .info-item { display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px dashed rgba(255,255,255,0.3); padding-bottom: 4px; }
-.info-item .info-label { color: var(--text-sub); }
-.highlight { font-weight: bold; color: var(--accent); font-size: 16px; }
+.info-item .info-label { color: #e0e0e0; }
+.highlight { font-weight: bold; color: #F37021; font-size: 16px; }
 
-.history-area { margin-bottom: 24px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;}
-.history-area h3 { font-size: 14px; margin-bottom: 10px; color: var(--text-sub); border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 4px;}
+.history-area { margin-bottom: 24px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; }
+.history-area h3 { font-size: 14px; margin-bottom: 10px; color: #e0e0e0; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 4px; }
 .history-list { list-style: none; }
 .history-list li { font-size: 13px; display: flex; align-items: center; margin-bottom: 6px; }
 .history-list .date { margin-right: 12px; opacity: 0.8; font-family: monospace; }
-.history-list .badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+.history-list .badge { margin-left: auto; background: #F37021; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
 
 .action-area { text-align: center; }
 .btn-primary {
   width: 100%; padding: 14px; border-radius: 30px; border: none;
-  background-color: var(--accent); color: #fff; font-size: 16px; font-weight: bold;
+  background-color: #F37021; color: #fff; font-size: 16px; font-weight: bold;
   cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }

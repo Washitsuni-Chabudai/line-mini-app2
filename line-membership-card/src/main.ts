@@ -2,37 +2,7 @@ import liff from '@line/liff';
 
 const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
 
-// --- UI制御・拡張機能 ---
-
-function setupThemeSwitcher() {
-  const themes = [
-    { id: 'btnCard', className: 'theme-card' },
-    { id: 'btnSign', className: 'theme-sign' },
-    { id: 'btnWallet', className: 'theme-wallet' },
-    { id: 'btnNight', className: 'theme-night' },
-    { id: 'btnCockpit', className: 'theme-cockpit' },
-  ];
-
-  themes.forEach(t => {
-    const btn = document.getElementById(t.id);
-    if (btn) {
-      btn.addEventListener('click', () => {
-        document.body.className = t.className;
-        if (t.className === 'theme-night') {
-          document.body.classList.add('theme-night-body');
-        } else {
-          document.body.classList.remove('theme-night-body');
-        }
-
-        document.querySelectorAll('.theme-switcher button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        sendClientLog('theme_changed', { theme: t.className });
-      });
-    }
-  });
-}
-
+// --- リアルタイム時計 ---
 function startSecurityClock() {
   const clockEl = document.getElementById('realtimeClock');
   if (!clockEl) return;
@@ -83,7 +53,6 @@ async function authenticateWithBackend(idToken: string) {
 // --- メイン起動処理 ---
 
 async function startApp() {
-  setupThemeSwitcher();
   startSecurityClock();
   sendClientLog('app_start_initiated');
 
@@ -115,13 +84,9 @@ async function startApp() {
       const idToken = liff.getIDToken();
       if (idToken) {
         await authenticateWithBackend(idToken);
-      } else {
-        console.warn('⚠️ IDトークンが取得できないため、バックエンド認証をスキップしました（PCブラウザテスト中）');
       }
     } else {
       if (!liff.isInClient()) {
-        console.warn('⚠️ LINEログイン未完了のため、ログインをスキップしてUIテストモードで動作します');
-        // PCブラウザでのUIテストをしやすくするため、未ログイン時はダミー名を表示
         const { displayName } = getElements();
         if (displayName) displayName.textContent = 'テストドライバー (ゲスト)';
       } else {
