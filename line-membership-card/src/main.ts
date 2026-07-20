@@ -29,6 +29,25 @@ async function sendClientLog(action: string, details?: Record<string, any>) {
 }
 
 /**
+ * ★追加: バックエンド（api/login.ts）へ ID Token を送信して認証・ログ記録を行う関数
+ */
+async function authenticateWithBackend(idToken: string) {
+  const response = await fetch('/api/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('バックエンド認証に失敗しました');
+  }
+
+  return await response.json();
+}
+
+/**
  * 画面の表示状態（ローディング/成功/エラー）を一括コントロールする関数
  */
 function updateUIState(state: 'loading' | 'success' | 'error', errorMessage?: string) {
@@ -44,8 +63,7 @@ function updateUIState(state: 'loading' | 'success' | 'error', errorMessage?: st
           再試行する
         </button>
       `;
-      
-      // ログ追加ポイント⑦: ユーザーが再試行ボタンを押した瞬間
+
       document.getElementById('retryBtn')?.addEventListener('click', () => {
         sendClientLog('click_retry_button', { reason: errorMessage });
         location.reload();
@@ -58,28 +76,20 @@ function updateUIState(state: 'loading' | 'success' | 'error', errorMessage?: st
  * LINEミニアプリのメイン起動処理
  */
 async function startApp() {
-  // ログ追加ポイント①: アプリ起動開始
   sendClientLog('app_start_initiated');
-
-  // 1. ローディング状態の開始
   updateUIState('loading');
 
-  // 2. LIFF IDの存在チェック
   if (!LIFF_ID) {
     console.error('LIFF IDが未設定です。');
-    // ログ追加ポイント②: 設定エラー発生
     sendClientLog('liff_id_missing');
     updateUIState('error', '設定エラー：LIFF IDが見つかりません');
     return;
   }
 
   try {
-    // 3. LIFF初期化
     await liff.init({ liffId: LIFF_ID });
-    // ログ追加ポイント③: LIFF初期化成功
     sendClientLog('liff_init_success', { isInClient: liff.isInClient() });
 
-    // 4. ログインチェックとプロフィール取得
     if (liff.isLoggedIn()) {
       const profile = await liff.getProfile();
       const { displayName, pictureUrl } = getElements();
@@ -87,14 +97,20 @@ async function startApp() {
       if (displayName) displayName.textContent = profile.displayName;
       if (pictureUrl && profile.pictureUrl) pictureUrl.src = profile.pictureUrl;
 
-      // ログ追加ポイント④: プロフィール表示成功（ユーザー情報を記録）
       sendClientLog('profile_loaded_success', {
         userId: profile.userId,
         displayName: profile.displayName,
       });
 
+      // ★追加: LINEからID Tokenを取得し、バックエンド（api/login.ts）へ送信
+      const idToken = liff.getIDToken();
+      if (idToken) {
+        await authenticateWithBackend(idToken);
+      } else {
+        sendClientLog('id_token_missing');
+      }
+
     } else {
-      // ログ追加ポイント⑤: ログインが必要な状態
       sendClientLog('user_not_logged_in');
       if (!liff.isInClient()) {
         sendClientLog('login_redirect_initiated');
@@ -103,7 +119,6 @@ async function startApp() {
     }
   } catch (error: any) {
     console.error('LINEミニアプリ起動エラー:', error);
-    // ログ追加ポイント⑥: 起動時エラー発生
     sendClientLog('app_start_failed', { message: error?.message || String(error) });
     updateUIState('error', '通信に失敗しました。電波状況をご確認ください。');
   }
