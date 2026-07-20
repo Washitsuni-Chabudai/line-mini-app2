@@ -1,96 +1,103 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+/* ベースリセット */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Helvetica Neue', Arial, sans-serif; }
+body { background-color: #f0f2f5; transition: background 0.3s; padding-bottom: 20px; }
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+/* 🎨 5つのテーマ定義（CSS変数） */
+/* 1. 阪神高速標識風（スポーティ・初期値） */
+.theme-sign {
+  --card-bg: linear-gradient(135deg, #00703C 0%, #004d29 100%); /* 阪神高速グリーン */
+  --text-main: #ffffff;
+  --text-sub: #e0e0e0;
+  --accent: #F37021; /* 阪神オレンジ */
+  --border-radius: 12px;
 }
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* 2. カード風（スタンダード・高級感） */
+.theme-card {
+  --card-bg: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
+  --text-main: #333333;
+  --text-sub: #555555;
+  --accent: #4a90e2;
+  --border-radius: 16px;
 }
-a:hover {
-  color: #535bf2;
+/* 3. ウォレット風（モダンミニマル） */
+.theme-wallet {
+  --card-bg: #ffffff;
+  --text-main: #111111;
+  --text-sub: #888888;
+  --accent: #000000;
+  --border-radius: 20px;
 }
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+/* 4. ナイトモード（ダッシュボード風） */
+.theme-night {
+  --card-bg: #1a1a1a;
+  --text-main: #00ff00;
+  --text-sub: #aaaaaa;
+  --accent: #00cc00;
+  --border-radius: 8px;
+  body { background-color: #000; }
 }
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vanilla:hover {
-  filter: drop-shadow(0 0 2em #3178c6aa);
+/* 5. コックピット風（機能重視） */
+.theme-cockpit {
+  --card-bg: #2c3e50;
+  --text-main: #f1c40f;
+  --text-sub: #bdc3c7;
+  --accent: #e74c3c;
+  --border-radius: 4px;
 }
 
-.card {
-  padding: 2em;
+/* アプリ全体レイアウト */
+#app { max-width: 480px; margin: 0 auto; padding: 16px; }
+
+/* テーマ切り替えボタン群 */
+.theme-switcher { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 16px; scrollbar-width: none; }
+.theme-switcher button {
+  white-space: nowrap; padding: 6px 12px; border-radius: 20px;
+  border: 1px solid #ccc; background: #fff; font-size: 12px; cursor: pointer;
 }
 
-.read-the-docs {
-  color: #888;
+/* 💳 カード本体のスタイリング */
+.membership-card {
+  background: var(--card-bg); color: var(--text-main);
+  border-radius: var(--border-radius);
+  padding: 24px 20px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  transition: all 0.4s ease;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px;}
+.brand-title { font-weight: bold; font-size: 16px; letter-spacing: 1px;}
+.security-clock { font-family: monospace; font-size: 14px; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 4px; }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.profile-area { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+.profile-img { width: 60px; height: 60px; border-radius: 50%; border: 3px solid var(--text-main); object-fit: cover;}
+.greeting { font-size: 12px; color: var(--text-sub); margin-bottom: 4px; }
+.profile-info h2 { font-size: 20px; margin: 0;}
+
+/* ⚠️ バーコードエリア（スキャナー読み取りのため背景は強制白） */
+.barcode-area {
+  background: #ffffff; padding: 16px; border-radius: 8px; text-align: center; margin-bottom: 24px;
+}
+.barcode-hint { font-size: 11px; color: #666; margin-bottom: 8px; }
+.barcode-img { width: 100%; max-width: 250px; height: auto; }
+
+/* 情報グリッド */
+.info-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 24px; }
+.info-item { display: flex; justify-content: space-between; font-size: 14px; border-bottom: 1px dashed rgba(255,255,255,0.3); padding-bottom: 4px; }
+.info-item .info-label { color: var(--text-sub); }
+.highlight { font-weight: bold; color: var(--accent); font-size: 16px; }
+
+/* 走行履歴 */
+.history-area { margin-bottom: 24px; background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px;}
+.history-area h3 { font-size: 14px; margin-bottom: 10px; color: var(--text-sub); border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 4px;}
+.history-list { list-style: none; }
+.history-list li { font-size: 13px; display: flex; align-items: center; margin-bottom: 6px; }
+.history-list .date { margin-right: 12px; opacity: 0.8; font-family: monospace; }
+.history-list .badge { margin-left: auto; background: var(--accent); color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; }
+
+/* クーポンボタン */
+.action-area { text-align: center; }
+.btn-primary {
+  width: 100%; padding: 14px; border-radius: 30px; border: none;
+  background-color: var(--accent); color: #fff; font-size: 16px; font-weight: bold;
+  cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }

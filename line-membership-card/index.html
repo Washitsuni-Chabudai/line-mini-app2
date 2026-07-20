@@ -2,28 +2,77 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LINE 会員証</title>
-    <style>
-      body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f3f4f6; margin: 0; }
-      .card { background: white; width: 300px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); padding: 24px; text-align: center; }
-      .avatar { width: 80px; height: 80px; border-radius: 50%; border: 3px solid #06c755; margin-bottom: 12px; object-fit: cover; }
-      .name { font-size: 1.25rem; font-weight: bold; color: #333; margin-bottom: 4px; }
-      .rank { color: #06c755; font-size: 0.85rem; font-weight: bold; letter-spacing: 1px; margin-bottom: 24px; }
-      .barcode { background: #111; color: white; padding: 16px; font-family: monospace; letter-spacing: 6px; font-size: 1.1rem; border-radius: 6px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>デジタルハイウェイパス</title>
+    <link rel="stylesheet" href="/style.css" />
   </head>
-  <body>
+  <body class="theme-sign"> <!-- 初期テーマ: 阪神高速標識風 -->
     <div id="app">
-      <div class="card">
-        <!-- LINEのアイコン画像が入る場所 -->
-        <img id="pictureUrl" class="avatar" src="https://placehold.co/80" alt="ユーザー画像" />
-        <!-- LINEの名前が入る場所 -->
-        <div id="displayName" class="name">読み込み中...</div>
-        <div class="rank">PREMIUM MEMBER</div>
-        <!-- 簡易的なバーコード表示（裏で会員番号と連動させるイメージです） -->
-        <div class="barcode">||||| | || ||||</div>
-        <small style="color: #999; display: block; margin-top: 12px;">No. 2026-0719</small>
+      <!-- 🎨 テーマ切り替えタブ -->
+      <div class="theme-switcher">
+        <button onclick="switchTheme('theme-card')">カード風</button>
+        <button onclick="switchTheme('theme-sign')">標識風</button>
+        <button onclick="switchTheme('theme-wallet')">ウォレット</button>
+        <button onclick="switchTheme('theme-night')">ナイト</button>
+        <button onclick="switchTheme('theme-cockpit')">コックピット</button>
+      </div>
+
+      <!-- 💳 会員証本体 -->
+      <div class="membership-card">
+        <!-- ヘッダーエリア -->
+        <div class="card-header">
+          <div class="brand-title">
+            <span class="logo-mark">🛣️</span> Hanshin Digital Pass
+          </div>
+          <!-- ⏱️ スクショ防止用 リアルタイム時計 -->
+          <div id="realtimeClock" class="security-clock">00:00:00</div>
+        </div>
+
+        <!-- プロフィールエリア -->
+        <div class="profile-area">
+          <img id="pictureUrl" src="https://via.placeholder.com/80" alt="プロフィール画像" class="profile-img" />
+          <div class="profile-info">
+            <p class="greeting">もぐらのコージくんサポート対象</p>
+            <h2 id="displayName">読み込み中...</h2>
+          </div>
+        </div>
+
+        <!-- バーコードエリア（背景は常に白） -->
+        <div class="barcode-area">
+          <p class="barcode-hint">スキャナーにかざしてください</p>
+          <img src="https://barcode.tec-it.com/barcode.ashx?data=HANSHIN123456789&code=Code128&translate-esc=on" alt="会員バーコード" class="barcode-img"/>
+        </div>
+
+        <!-- 車両・ETC情報 -->
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">連携ETCカード</span>
+            <span class="info-value">****-****-****-5678</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">登録車両</span>
+            <span class="info-value">阪神 300 あ 12-34</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">今月の走行距離</span>
+            <span class="info-value highlight">142 km</span>
+          </div>
+        </div>
+
+        <!-- 走行履歴エリア -->
+        <div class="history-area">
+          <h3>直近の走行履歴</h3>
+          <ul class="history-list">
+            <li><span class="date">07/19</span> 尼崎 ⇔ 梅田 <span class="badge">完了</span></li>
+            <li><span class="date">07/15</span> 京橋 ⇔ 尼崎 <span class="badge">完了</span></li>
+            <li><span class="date">07/10</span> 尼崎 ⇔ 中之島 <span class="badge">完了</span></li>
+          </ul>
+        </div>
+
+        <!-- アクションボタン -->
+        <div class="action-area">
+          <button id="couponBtn" class="btn-primary">🎁 クーポンメニューを見る</button>
+        </div>
       </div>
     </div>
     <script type="module" src="/src/main.ts"></script>
