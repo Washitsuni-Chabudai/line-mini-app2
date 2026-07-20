@@ -1,7 +1,7 @@
 import liff from '@line/liff';
 
 // 金庫（.envまたはVercelの環境変数）から安全にIDを読み出す
-const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
+const LIFF_ID = import.meta.env.VITE_LINE_LIFF_ID || '';
 
 async function startApp() {
   // 1. 環境変数が空の場合は事前にエラーを防ぐ
