@@ -4,7 +4,6 @@ const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
 
 // --- UI制御・拡張機能 ---
 
-// 各ボタン要素を確実に取得してイベントを登録する方式
 function setupThemeSwitcher() {
   const themes = [
     { id: 'btnCard', className: 'theme-card' },
@@ -18,7 +17,6 @@ function setupThemeSwitcher() {
     const btn = document.getElementById(t.id);
     if (btn) {
       btn.addEventListener('click', () => {
-        // テーマクラスをボディに適用
         document.body.className = t.className;
         if (t.className === 'theme-night') {
           document.body.classList.add('theme-night-body');
@@ -26,7 +24,6 @@ function setupThemeSwitcher() {
           document.body.classList.remove('theme-night-body');
         }
 
-        // アクティブボタンの切り替え
         document.querySelectorAll('.theme-switcher button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
@@ -75,7 +72,11 @@ async function authenticateWithBackend(idToken: string) {
       'Authorization': `Bearer ${idToken}`,
     },
   });
-  if (!response.ok) throw new Error('バックエンド認証に失敗しました');
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`バックエンド認証失敗 [Status: ${response.status}] 内容: ${errorText}`);
+  }
   return await response.json();
 }
 
@@ -114,9 +115,18 @@ async function startApp() {
       const idToken = liff.getIDToken();
       if (idToken) {
         await authenticateWithBackend(idToken);
+      } else {
+        console.warn('⚠️ IDトークンが取得できないため、バックエンド認証をスキップしました（PCブラウザテスト中）');
       }
     } else {
-      if (!liff.isInClient()) liff.login();
+      if (!liff.isInClient()) {
+        console.warn('⚠️ LINEログイン未完了のため、ログインをスキップしてUIテストモードで動作します');
+        // PCブラウザでのUIテストをしやすくするため、未ログイン時はダミー名を表示
+        const { displayName } = getElements();
+        if (displayName) displayName.textContent = 'テストドライバー (ゲスト)';
+      } else {
+        liff.login();
+      }
     }
   } catch (error: any) {
     console.error('LINEミニアプリ起動エラー:', error);
@@ -124,7 +134,6 @@ async function startApp() {
   }
 }
 
-// DOMの読み込みが完了してからアプリを起動するよう安全にラップ
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', startApp);
 } else {
