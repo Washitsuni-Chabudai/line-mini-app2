@@ -1,4 +1,5 @@
 import liff from '@line/liff';
+console.log('★Viteが読み込んでいる環境変数:', import.meta.env);
 
 // 金庫（.envまたはVercelの環境変数）から安全にIDを読み出す
 const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
