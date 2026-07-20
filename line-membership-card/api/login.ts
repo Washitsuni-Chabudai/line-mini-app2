@@ -1,26 +1,30 @@
-// Vercel Serverless Function 用の型定義（Node.js環境）
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // POSTメソッド以外のアクセスを拒否
+  // ログ1: リクエスト受信ログ
+  console.log('🚀 [Backend Log] APIリクエストを受信しました:', new Date().toISOString());
+
   if (req.method !== 'POST') {
+    console.warn('⚠️ [Backend Log] 不正なHTTPメソッド:', req.method);
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
   try {
-    // 1. ヘッダーから ID Token を抽出
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('❌ [Backend Log] Authorizationヘッダーが欠落しています');
       return res.status(401).json({ error: '認証トークン（ID Token）が存在しません' });
     }
 
     const idToken = authHeader.split(' ')[1];
     const channelId = process.env.VITE_LIFF_ID ? process.env.VITE_LIFF_ID.split('-')[0] : '';
 
-    // 2. LINE公式のID Token検証エンドポイントへ問い合わせ
+    // ログ2: LINE検証API呼び出し直前
+    console.log('🔄 [Backend Log] LINE公式サーバーへID Tokenの検証をリクエスト中...');
+
     const params = new URLSearchParams();
     params.append('id_token', idToken);
-    params.append('client_id', channelId); // LIFF IDのハイフンより前の数字（チャネルID）
+    params.append('client_id', channelId);
 
     const verifyResponse = await fetch('https://api.line.me/oauth2/v2.1/verify', {
       method: 'POST',
@@ -33,23 +37,24 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const verifyData = await verifyResponse.json();
 
     if (!verifyResponse.ok) {
-      console.error('LINE検証エラー:', verifyData);
+      console.error('❌ [Backend Log] LINE検証失敗:', verifyData);
       return res.status(400).json({ error: '無効なID Tokenです', details: verifyData });
     }
 
-    // 3. 検証成功：安全に確認されたユーザー情報を返却
-    // ※実務ではここでデータベース（DB）と照合し、会員データの取得や作成を行います
+    // ログ3: 認証成功ログ（ユーザーIDと表示名を出力）
+    console.log(`✅ [Backend Log] 認証成功! ユーザー名: ${verifyData.name} (User ID: ${verifyData.sub})`);
+
     return res.status(200).json({
       message: '認証に成功しました',
       user: {
-        userId: verifyData.sub,        // LINEのユーザーID
-        displayName: verifyData.name,  // 表示名
-        pictureUrl: verifyData.picture // プロフィール画像URL
+        userId: verifyData.sub,
+        displayName: verifyData.name,
+        pictureUrl: verifyData.picture
       }
     });
 
   } catch (error) {
-    console.error('サーバー内部エラー:', error);
+    console.error('❌ [Backend Log] サーバー内部エラー例外発生:', error);
     return res.status(500).json({ error: 'サーバー内部でエラーが発生しました' });
   }
 }
