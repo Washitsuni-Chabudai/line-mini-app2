@@ -4,13 +4,38 @@ const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
 
 // --- UI制御・拡張機能 ---
 
-// テーマ切り替え関数（グローバルに公開してHTMLのonclickから呼べるようにする）
-(window as any).switchTheme = (themeName: string) => {
-  document.body.className = themeName;
-  sendClientLog('theme_changed', { theme: themeName });
-};
+// 各ボタン要素を確実に取得してイベントを登録する方式
+function setupThemeSwitcher() {
+  const themes = [
+    { id: 'btnCard', className: 'theme-card' },
+    { id: 'btnSign', className: 'theme-sign' },
+    { id: 'btnWallet', className: 'theme-wallet' },
+    { id: 'btnNight', className: 'theme-night' },
+    { id: 'btnCockpit', className: 'theme-cockpit' },
+  ];
 
-// スクショ防止用リアルタイム時計の起動
+  themes.forEach(t => {
+    const btn = document.getElementById(t.id);
+    if (btn) {
+      btn.addEventListener('click', () => {
+        // テーマクラスをボディに適用
+        document.body.className = t.className;
+        if (t.className === 'theme-night') {
+          document.body.classList.add('theme-night-body');
+        } else {
+          document.body.classList.remove('theme-night-body');
+        }
+
+        // アクティブボタンの切り替え
+        document.querySelectorAll('.theme-switcher button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        sendClientLog('theme_changed', { theme: t.className });
+      });
+    }
+  });
+}
+
 function startSecurityClock() {
   const clockEl = document.getElementById('realtimeClock');
   if (!clockEl) return;
@@ -20,7 +45,6 @@ function startSecurityClock() {
   }, 1000);
 }
 
-// 画面要素の取得
 function getElements() {
   return {
     displayName: document.getElementById('displayName'),
@@ -29,7 +53,7 @@ function getElements() {
   };
 }
 
-// --- 通信・ログ制御（変更なし） ---
+// --- 通信・ログ制御 ---
 
 async function sendClientLog(action: string, details?: Record<string, any>) {
   try {
@@ -58,10 +82,10 @@ async function authenticateWithBackend(idToken: string) {
 // --- メイン起動処理 ---
 
 async function startApp() {
-  startSecurityClock(); // 時計をスタート
+  setupThemeSwitcher();
+  startSecurityClock();
   sendClientLog('app_start_initiated');
 
-  // クーポンボタンのイベント設定
   const { couponBtn } = getElements();
   couponBtn?.addEventListener('click', () => {
     sendClientLog('click_coupon_menu');
@@ -100,4 +124,9 @@ async function startApp() {
   }
 }
 
-startApp();
+// DOMの読み込みが完了してからアプリを起動するよう安全にラップ
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', startApp);
+} else {
+  startApp();
+}
