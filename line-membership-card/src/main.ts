@@ -1,38 +1,46 @@
 import liff from '@line/liff';
 
-// 金庫（.env）から安全にIDを読み出す記述
+// 金庫（.envまたはVercelの環境変数）から安全にIDを読み出す
 const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
 
 async function startApp() {
+  // 1. 環境変数が空の場合は事前にエラーを防ぐ
+  if (!LIFF_ID) {
+    console.error('LIFF IDが設定されていません。.env または Vercelの設定を確認してください。');
+    showError('LIFF IDが設定されていません');
+    return;
+  }
+
   try {
-    // 1. LINEのインカム（LIFF）を起動する（必ず「init」にします）
+    // 2. 過去コードと同じ正しい初期化手順
     await liff.init({ liffId: LIFF_ID });
 
-    // 2. すでにLINE内でログインされているか確認
+    // 3. ログイン状態の確認とプロフィール取得
     if (liff.isLoggedIn()) {
-      // 3. LINEからユーザーの「名前」や「写真」のデータを貰う
       const profile = await liff.getProfile();
       
-      // 4. 画面（HTML）の文字と画像を、LINEのデータに書き換える
       const nameElement = document.getElementById('displayName');
       const pictureElement = document.getElementById('pictureUrl') as HTMLImageElement;
 
-      if (nameElement) {
-        nameElement.textContent = profile.displayName; // 名前を反映
-      }
-      if (pictureElement && profile.pictureUrl) {
-        pictureElement.src = profile.pictureUrl; // アイコン写真を反映
-      }
+      if (nameElement) nameElement.textContent = profile.displayName;
+      if (pictureElement && profile.pictureUrl) pictureElement.src = profile.pictureUrl;
     } else {
-      // もし普通のブラウザで開かれた場合は、LINEのログイン画面を出す
-      liff.login();
+      // LINEアプリ外で開かれた場合のみログインを促す（安全な判定）
+      if (!liff.isInClient()) {
+        liff.login();
+      }
     }
   } catch (error) {
-    console.error('LINEのデータ読み込みに失敗しました:', error);
-    const nameElement = document.getElementById('displayName');
-    if (nameElement) nameElement.textContent = 'エラーが発生しました';
+    console.error('LINE初期化エラー:', error);
+    showError('エラーが発生しました');
   }
 }
 
-// アプリを動かす
+// 画面にエラーを表示する共通関数
+function showError(message: string) {
+  const nameElement = document.getElementById('displayName');
+  if (nameElement) nameElement.textContent = message;
+}
+
+// アプリ起動
 startApp();
