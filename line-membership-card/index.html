@@ -19,7 +19,14 @@
 
         <!-- プロフィールエリア -->
         <div class="profile-area">
-          <img id="pictureUrl" src="https://via.placeholder.com/80" alt="プロフィール画像" class="profile-img" />
+          <!-- 🔧 style属性で強制的に60pxの丸型・収縮防止を適用 -->
+          <img 
+            id="pictureUrl" 
+            src="https://via.placeholder.com/80" 
+            alt="プロフィール画像" 
+            class="profile-img" 
+            style="width: 60px !important; height: 60px !important; min-width: 60px !important; max-width: 60px !important; max-height: 60px !important; border-radius: 50% !important; object-fit: cover !important; flex-shrink: 0 !important; border: 3px solid #ffffff !important;"
+          />
           <div class="profile-info">
             <p class="greeting">会員様</p>
             <h2 id="displayName">読み込み中...</h2>
