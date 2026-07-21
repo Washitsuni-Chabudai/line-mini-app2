@@ -3,8 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>デジタルハイウェイパス</title>
-    <link rel="stylesheet" href="/style.css" />
+    <title>デジタルハイウェイパス - チェックイン</title>
   </head>
   <body>
     <div id="app">
@@ -32,10 +31,10 @@
           </div>
         </div>
 
-        <!-- バーコードエリア -->
-        <div class="barcode-area">
-          <p class="barcode-hint">スキャナーにかざしてください</p>
-          <img src="https://barcode.tec-it.com/barcode.ashx?data=HANSHIN123456789&code=Code128&translate-esc=on" alt="会員バーコード" class="barcode-img"/>
+        <!-- 📱 QRコードエリア（バーコードから変更・正方形でスタイリッシュに配置） -->
+        <div class="qr-area">
+          <p class="qr-hint">係員またはリーダーにかざしてください</p>
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=HANSHIN_CHECKIN_SECURE_TOKEN" alt="会員QRコード" class="qr-img"/>
         </div>
 
         <!-- 車両・ETC情報 -->
@@ -52,6 +51,13 @@
             <span class="info-label">割引ステータス</span>
             <span class="info-value highlight">適用中 (マイレージ)</span>
           </div>
+        </div>
+
+        <!-- 📍 ワンタップチェックインボタン（新規追加） -->
+        <div class="action-area">
+          <button id="checkinBtn" class="btn-checkin">
+            📍 尼崎PAにチェックイン報告する
+          </button>
         </div>
       </div>
     </div>

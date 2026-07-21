@@ -7,6 +7,7 @@ function getElements() {
   return {
     displayName: document.getElementById('displayName'),
     pictureUrl: document.getElementById('pictureUrl') as HTMLImageElement | null,
+    checkinBtn: document.getElementById('checkinBtn'),
   };
 }
 
@@ -38,8 +39,43 @@ async function authenticateWithBackend(idToken: string) {
   return await response.json();
 }
 
+// 📍 チェックインメッセージ送信処理 (`liff.sendMessages` の実装)
+async function handleCheckin() {
+  sendClientLog('click_checkin_button');
+  
+  if (!liff.isLoggedIn()) {
+    alert('ログインが必要です。');
+    return;
+  }
+
+  // PCブラウザでのテスト時はシミュレーション動作にする
+  if (!liff.isInClient()) {
+    alert('【シミュレーション】尼崎PAへのチェックイン報告メッセージを送信しました！（※PCブラウザテスト中のため実際のトーク送信はスキップされます）');
+    return;
+  }
+
+  try {
+    // ユーザーが起動しているチャットルームへメッセージを自動送信
+    await liff.sendMessages([
+      {
+        type: 'text',
+        text: '【チェックイン報告】\n名神高速 尼崎PAにてデジタルハイウェイパスを利用しました！安全運転で走行中です。'
+      }
+    ]);
+    alert('✅ 尼崎PAへのチェックインをトークルームに送信しました！');
+    sendClientLog('checkin_success');
+  } catch (error: any) {
+    console.error('メッセージ送信失敗:', error);
+    alert('メッセージの送信に失敗しました: ' + (error?.message || error));
+    sendClientLog('checkin_failed', { error: error?.message });
+  }
+}
+
 async function startApp() {
   sendClientLog('app_start_initiated');
+
+  const { checkinBtn } = getElements();
+  checkinBtn?.addEventListener('click', handleCheckin);
 
   if (!LIFF_ID) {
     console.error('LIFF IDが未設定です。');
