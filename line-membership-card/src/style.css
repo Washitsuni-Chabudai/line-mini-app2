@@ -1,15 +1,21 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-body { background-color: #0f172a; padding: 16px; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+body { background-color: #0f172a; padding: 16px 16px 80px 16px; display: flex; justify-content: center; min-height: 100vh; }
 
-#app { width: 100%; max-width: 480px; }
+#app { width: 100%; max-width: 480px; position: relative; }
 
-.membership-card {
+/* 画面切り替えの制御 */
+.view-section { display: none; }
+.view-section.active { display: block; }
+
+/* 共通カードデザイン */
+.membership-card, .panel-card {
   background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
   color: #f8fafc;
   border-radius: 20px;
   padding: 24px 20px;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
 }
 
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px; }
@@ -18,20 +24,12 @@ body { background-color: #0f172a; padding: 16px; display: flex; justify-content:
 
 .profile-area { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
 .profile-img { 
-  width: 60px !important; 
-  height: 60px !important; 
-  min-width: 60px !important; 
-  max-width: 60px !important; 
-  max-height: 60px !important; 
-  border-radius: 50% !important; 
-  border: 2px solid #38bdf8 !important; 
-  object-fit: cover !important; 
-  flex-shrink: 0 !important; 
+  width: 60px !important; height: 60px !important; min-width: 60px !important; max-width: 60px !important; max-height: 60px !important; 
+  border-radius: 50% !important; border: 2px solid #38bdf8 !important; object-fit: cover !important; flex-shrink: 0 !important; 
 }
 .greeting { font-size: 12px; color: #94a3b8; margin-bottom: 4px; }
 .profile-info h2 { font-size: 18px; font-weight: 600; color: #f8fafc; word-break: break-all; }
 
-/* 📱 QRコードエリアのスタイル */
 .qr-area { background: #ffffff; padding: 16px; border-radius: 16px; text-align: center; margin-bottom: 20px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.06); }
 .qr-hint { font-size: 11px; color: #64748b; margin-bottom: 8px; font-weight: 500; }
 .qr-img { width: 150px; height: 150px; display: block; margin: 0 auto; }
@@ -43,21 +41,61 @@ body { background-color: #0f172a; padding: 16px; display: flex; justify-content:
 .info-value { font-weight: 500; color: #f8fafc; }
 .highlight { font-weight: 600; color: #38bdf8; }
 
-/* 📍 チェックインボタンのスタイル */
 .action-area { text-align: center; }
-.btn-checkin {
-  width: 100%;
-  padding: 14px;
-  border-radius: 14px;
-  border: none;
+.btn-primary {
+  width: 100%; padding: 14px; border-radius: 14px; border: none;
   background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-  color: #ffffff;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
+  color: #ffffff; font-size: 15px; font-weight: 700; cursor: pointer;
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
-  transition: transform 0.1s ease, opacity 0.2s ease;
 }
-.btn-checkin:active {
-  transform: scale(0.98);
+
+/* サブパネル用スタイル (クーポン・履歴・設定) */
+.panel-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; color: #f8fafc; }
+.panel-subtitle { font-size: 12px; color: #94a3b8; margin-bottom: 20px; }
+
+.coupon-list, .history-list { display: flex; flex-direction: column; gap: 12px; }
+.coupon-item, .history-item {
+  background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; align-items: center;
+}
+.coupon-tag { font-size: 10px; background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+.coupon-info h3 { font-size: 15px; font-weight: 600; margin: 4px 0; color: #fff; }
+.coupon-info p { font-size: 11px; color: #94a3b8; }
+.btn-sub { background: #334155; color: #fff; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; cursor: pointer; }
+
+.history-date { font-size: 11px; color: #94a3b8; margin-bottom: 4px; }
+.history-detail { display: flex; justify-content: space-between; width: 100%; font-size: 13px; }
+.status-ok { color: #34d399; font-weight: 600; }
+
+.settings-group { display: flex; flex-direction: column; gap: 10px; }
+.settings-row { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 14px; display: flex; justify-content: space-between; font-size: 13px; align-items: center; }
+.settings-val { color: #34d399; font-weight: 600; }
+.settings-link { color: #38bdf8; cursor: pointer; }
+
+/* 📱 下部タブバーのデザイン */
+.bottom-tab-bar {
+  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 100%; max-width: 480px; background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px); border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000;
+}
+.tab-item {
+  background: none; border: none; display: flex; flex-direction: column; align-items: center;
+  color: #64748b; cursor: pointer; font-size: 10px; gap: 4px; flex: 1; transition: color 0.2s ease;
+}
+.tab-icon { font-size: 20px; }
+.tab-item.active { color: #38bdf8; font-weight: 600; }
+
+/* 📱 LINE外ブラウザ誘導画面 */
+.line-redirect-container {
+  background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+  color: #f8fafc; border-radius: 20px; padding: 32px 24px; text-align: center;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.redirect-icon-wrapper { font-size: 48px; margin-bottom: 16px; }
+.redirect-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; color: #ffffff; }
+.redirect-desc { font-size: 14px; color: #94a3b8; line-height: 1.6; margin-bottom: 24px; }
+.btn-line-open {
+  display: block; width: 100%; padding: 14px; border-radius: 14px; background-color: #06c755;
+  color: #ffffff; font-size: 15px; font-weight: 700; text-decoration: none; box-shadow: 0 4px 12px rgba(6, 199, 85, 0.4);
 }

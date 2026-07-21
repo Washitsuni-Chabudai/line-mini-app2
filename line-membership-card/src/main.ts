@@ -39,7 +39,25 @@ async function authenticateWithBackend(idToken: string) {
   return await response.json();
 }
 
-// 📍 チェックインメッセージ送信処理 (`liff.sendMessages` の実装)
+// 📱 タブ切り替えロジック
+function initTabs() {
+  const tabItems = document.querySelectorAll('.tab-item');
+  tabItems.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.getAttribute('data-target');
+      if (!targetId) return;
+
+      // すべてのタブとビューのactiveを解除
+      document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+
+      // 選択されたタブとビューにactiveを付与
+      tab.classList.add('active');
+      document.getElementById(targetId)?.classList.add('active');
+    });
+  });
+}
+
 async function handleCheckin() {
   sendClientLog('click_checkin_button');
   
@@ -48,14 +66,7 @@ async function handleCheckin() {
     return;
   }
 
-  // PCブラウザでのテスト時はシミュレーション動作にする
-  if (!liff.isInClient()) {
-    alert('【シミュレーション】尼崎PAへのチェックイン報告メッセージを送信しました！（※PCブラウザテスト中のため実際のトーク送信はスキップされます）');
-    return;
-  }
-
   try {
-    // ユーザーが起動しているチャットルームへメッセージを自動送信
     await liff.sendMessages([
       {
         type: 'text',
@@ -73,6 +84,7 @@ async function handleCheckin() {
 
 async function startApp() {
   sendClientLog('app_start_initiated');
+  initTabs(); // タブ切り替えの初期化
 
   const { checkinBtn } = getElements();
   checkinBtn?.addEventListener('click', handleCheckin);
@@ -84,6 +96,27 @@ async function startApp() {
 
   try {
     await liff.init({ liffId: LIFF_ID });
+
+    // 🛡️ LINE外ブラウザ判定
+    if (!liff.isInClient()) {
+      sendClientLog('opened_outside_line');
+      const appEl = document.getElementById('app');
+      if (appEl) {
+        const liffAppUrl = `https://liff.line.me/${LIFF_ID}`;
+        appEl.innerHTML = `
+          <div class="line-redirect-container">
+            <div class="redirect-icon-wrapper">📱</div>
+            <h2 class="redirect-title">LINEアプリからお開きください</h2>
+            <p class="redirect-desc">
+              このデジタルハイウェイパスは、LINEミニアプリ専用のサービスです。<br>
+              お手数ですが、下のボタンよりLINEアプリを開いて再度アクセスしてください。
+            </p>
+            <a href="${liffAppUrl}" class="btn-line-open">LINEアプリで開く</a>
+          </div>
+        `;
+      }
+      return;
+    }
 
     if (liff.isLoggedIn()) {
       const profile = await liff.getProfile();
@@ -97,15 +130,11 @@ async function startApp() {
         await authenticateWithBackend(idToken);
       }
     } else {
-      if (!liff.isInClient()) {
-        const { displayName } = getElements();
-        if (displayName) displayName.textContent = 'テストユーザー (ゲスト)';
-      } else {
-        liff.login();
-      }
+      liff.login();
     }
   } catch (error: any) {
     console.error('LINEミニアプリ起動エラー:', error);
+    sendClientLog('app_start_failed', { message: error?.message || String(error) });
   }
 }
 
