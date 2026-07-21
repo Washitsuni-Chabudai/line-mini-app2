@@ -1,3 +1,4 @@
+import './style.css';
 import liff from '@line/liff';
 
 const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
