@@ -5,7 +5,7 @@ import { CouponView } from './components/CouponView';
 import { HistoryView } from './components/HistoryView';
 import { SettingsView } from './components/SettingsView';
 
-const LIFF_ID = import.meta.env.VITE_LIFF_ID || '';
+const LIFF_ID = import.meta.env.VITE_LIFF_ID_2 || '';
 
 export function App() {
   const [currentTab, setCurrentTab] = useState<'card' | 'coupon' | 'history' | 'settings'>('card');
