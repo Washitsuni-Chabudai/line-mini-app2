@@ -17,7 +17,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     const idToken = authHeader.split(' ')[1];
-    const channelId = process.env.VITE_LIFF_ID_2 ? process.env.VITE_LIFF_ID_2.split('-')[0] : '';
+    const channelId = process.env.VITE_LIFF_ID_3 ? process.env.VITE_LIFF_ID_3.split('-')[0] : '';
 
     // ログ2: LINE検証API呼び出し直前
     console.log('🔄 [Backend Log] LINE公式サーバーへID Tokenの検証をリクエスト中...');
